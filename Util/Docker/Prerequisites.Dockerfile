@@ -2,8 +2,9 @@ FROM ubuntu:18.04
 
 USER root
 
-ARG EPIC_USER=user
-ARG EPIC_PASS=pass
+ARG ssh_prv_key
+ARG ssh_pub_key
+
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update ; \
   apt-get install -y wget software-properties-common && \
@@ -47,11 +48,27 @@ USER carla
 WORKDIR /home/carla
 ENV UE4_ROOT /home/carla/UE4.26
 
-RUN git clone --depth 1 -b carla "https://${EPIC_USER}:${EPIC_PASS}@github.com/CarlaUnreal/UnrealEngine.git" ${UE4_ROOT}
+# Authorize SSH Host
+RUN mkdir -p /home/carla/.ssh && \
+    chmod 0700 /home/carla/.ssh && \
+    ssh-keyscan github.com > /home/carla/.ssh/known_hosts
+
+# Add the keys and set permissions
+RUN echo "$ssh_prv_key" > /home/carla/.ssh/id_ed25519 && \
+    echo "$ssh_pub_key" > /home/carla/.ssh/id_ed25519.pub && \
+    chmod 600 /home/carla/.ssh/id_ed25519 && \
+    chmod 600 /home/carla/.ssh/id_ed25519.pub && \
+    cat /home/carla/.ssh/id_ed25519.pub && \
+    cat /home/carla/.ssh/id_ed25519
+
+RUN git clone --depth 1 -b carla "git@github.com:CarlaUnreal/UnrealEngine.git" ${UE4_ROOT}
 
 RUN cd $UE4_ROOT && \
   ./Setup.sh && \
   ./GenerateProjectFiles.sh && \
   make
+
+# Remove SSH keys
+RUN rm -rf /home/carla/.ssh/
 
 WORKDIR /home/carla/

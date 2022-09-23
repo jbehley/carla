@@ -34,32 +34,16 @@ Make sure you have installed **Python 3.6 or newer**, check that is in the path,
 
 ## Dependencies
 
-As mentioned before, in order to use Unreal Engine inside Docker we use [ue4-docker](https://github.com/adamrehn/ue4-docker). You can install it using `pip3`.  
-Further information on installing ue4-docker on Linux can be found [here](https://adamrehn.com/docs/ue4-docker/configuration/configuring-linux).
-
-```
-pip3 install ue4-docker
-```
-
-You can use ue4-docker to automatically configure your Linux firewall:
-
-```
-ue4-docker setup
-```
+For authenticating with github, you need to have a working ssh authentication on your host systems, i.e., ssh keys in '~/.ssh' where the public key was added to your github repository. 
+Currently, the docker image is tested and working with passphrase-less ssh keys, but such keys should be only used for building the docker image.
 
 ## Building the Docker images
 
 Navigate to `carla/Util/Docker` and use the following commands, each one will take a long time.  
-First, let's create a Docker image containing a compiled version of Unreal Engine 4 version `24.3`. Change the version if needed.
+First, this will build the image with all the necessary requisites to build Carla in a **Ubuntu 18.04**
 
 ```
-ue4-docker build 4.24.3 --no-engine --no-minimal
-```
-
-Next, this will build the image with all the necessary requisites to build Carla in a **Ubuntu 18.04**
-
-```
-docker build -t carla-prerequisites -f Prerequisites.Dockerfile .
+docker build -t carla-prerequisites --build-arg ssh_prv_key="$(cat ~/.ssh/id_ed25519)" --build-arg ssh_pub_key="$(cat ~/.ssh/id_ed25519.pub)" -f Prerequisites.Dockerfile .
 ```
 
 Finally create the actual Carla image, it will search for `carla-prerequisites:latest`:
