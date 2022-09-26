@@ -54,12 +54,12 @@ RUN mkdir -p /home/carla/.ssh && \
     ssh-keyscan github.com > /home/carla/.ssh/known_hosts
 
 # Add the keys and set permissions
-RUN echo "$ssh_prv_key" > /home/carla/.ssh/id_ed25519 && \
-    echo "$ssh_pub_key" > /home/carla/.ssh/id_ed25519.pub && \
-    chmod 600 /home/carla/.ssh/id_ed25519 && \
-    chmod 600 /home/carla/.ssh/id_ed25519.pub && \
-    cat /home/carla/.ssh/id_ed25519.pub && \
-    cat /home/carla/.ssh/id_ed25519
+RUN echo "$ssh_prv_key" > /home/carla/.ssh/id_github && \
+    echo "$ssh_pub_key" > /home/carla/.ssh/id_github.pub && \
+    chmod 600 /home/carla/.ssh/id_github && \
+    chmod 600 /home/carla/.ssh/id_github.pub && \
+    cat /home/carla/.ssh/id_github.pub && \
+    cat /home/carla/.ssh/id_github
 
 RUN git clone --depth 1 -b carla "git@github.com:CarlaUnreal/UnrealEngine.git" ${UE4_ROOT}
 

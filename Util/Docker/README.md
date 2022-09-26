@@ -40,16 +40,10 @@ Currently, the docker image is tested and working with passphrase-less ssh keys,
 ## Building the Docker images
 
 Navigate to `carla/Util/Docker` and use the following commands, each one will take a long time.  
-First, this will build the image with all the necessary requisites to build Carla in a **Ubuntu 18.04**
+First, this will build the image with all the necessary requisites to build Carla in a **Ubuntu 18.04**; for downloading the Unreal source code (provided by Carla), you have to have developer access to the Unreal repository via your Github account. Thus, you have to provide the private and public keys via the command line arguments. The credentials are only used for accessing the repository and then removed from the container. Build the `carla-prerequisite` image via the following command:
 
 ```
-docker build -t carla-prerequisites --build-arg ssh_prv_key="$(cat ~/.ssh/id_ed25519)" --build-arg ssh_pub_key="$(cat ~/.ssh/id_ed25519.pub)" -f Prerequisites.Dockerfile .
-```
-
-Finally create the actual Carla image, it will search for `carla-prerequisites:latest`:
-
-```
-docker build -t carla -f Carla.Dockerfile .
+docker build -t carla-prerequisites --build-arg ssh_prv_key="$(cat ~/.ssh/<github_ssh>)" --build-arg ssh_pub_key="$(cat ~/.ssh/<github_ssh.pub>)" -f Prerequisites.Dockerfile .
 ```
 
 ---
